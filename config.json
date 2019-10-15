@@ -6,5 +6,7 @@
     "optimizer_lr": 0.001,
     "use_cuda": false,
     "save_model": false,
-    "save_name": "mnist_cnn.pt"
+    "save_name": "mnist_cnn.pt",
+    "num_workers": 5,
+    "set_info_path": "set.info"
 }

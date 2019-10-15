@@ -1,7 +1,11 @@
+#todo: another logger (both file and stdout)
+#      adding reqs
+
 import torch
 import torchvision
 import json
 import logging
+import os
 
 with open('config.json') as json_config:
     data = json.load(json_config)
@@ -14,6 +18,8 @@ OPTIMIZER_LR = data['optimizer_lr']
 USE_CUDA = data['use_cuda']
 SAVE_MODEL = data['save_model']
 SAVE_NAME = data['save_name']
+NUM_WORKERS = data['num_workers']
+SET_INFO_PATH = data['set_info_path']
 
 
 class Network(torch.nn.Module):
@@ -51,9 +57,10 @@ def load_sets(train_batch_size: int, test_batch_size: int) -> (torch.utils.data.
     test_set = torchvision.datasets.MNIST('', train=False, download=True,
                                           transform=torchvision.transforms.Compose([torchvision.transforms.ToTensor()]))
 
-    train_set_loaded = torch.utils.data.DataLoader(train_set, train_batch_size, shuffle=True)
-    test_set_loaded = torch.utils.data.DataLoader(test_set, test_batch_size, shuffle=False)
+    train_set_loaded = torch.utils.data.DataLoader(train_set, train_batch_size, shuffle=True, num_workers=NUM_WORKERS, pin_memory=True, timeout=10)
+    test_set_loaded = torch.utils.data.DataLoader(test_set, test_batch_size, shuffle=False, num_workers=NUM_WORKERS, pin_memory=True, timeout=10)
 
+    # sets contain [0] - batch of samples, [1] tensor of numeric values (tensor of tensors)
     return train_set_loaded, test_set_loaded
 
 
@@ -108,12 +115,39 @@ def test_model(model: Network, test_set_loaded: torch.utils.data.DataLoader, dev
         logging.info('Accuracy: %s', round(correct/total, 3))
 
 
+def MNIST_set_info(set_loaded: torch.utils.data.DataLoader):
+    """
+    Prints the information about data set based on SET_INFO_PATH file in config.json, or if
+    it does not exist, creates such and fill it in with information.
+
+    :param set_loaded: loaded set of data
+    """
+
+    if not os.path.exists(SET_INFO_PATH):
+        total = 0
+        counter_dict = {0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0, 8:0, 9:0}
+
+        for (x, y) in set_loaded:
+            for ys in y:
+                counter_dict[int(ys)] += 1
+                total += 1
+
+        with open(SET_INFO_PATH, 'w') as file:
+            for i in counter_dict:
+                file.write('{}: {}\n'.format(i, round(counter_dict[i]/total * 100, 3)))
+    else:
+        with open(SET_INFO_PATH) as file:
+            print(file.read())
+
+
 def main():
     """Implements main program logic."""
 
-    logging.basicConfig(format='%(asctime)s:%(levelname)s:%(message)s', level=logging.DEBUG)
+    logging.basicConfig(filename='mnist.log', format='%(asctime)s:%(levelname)s:%(message)s', level=logging.DEBUG)
 
     train_set_loaded, test_set_loaded = load_sets(TRAIN_BATCH_SIZE, TEST_BATCH_SIZE)
+
+    MNIST_set_info(train_set_loaded)
 
     if USE_CUDA and torch.cuda.is_available():
         device = torch.device('cuda')
