@@ -1,5 +1,4 @@
 #todo: another logger (both file and stdout)
-#      adding reqs
 
 import torch
 import torchvision
