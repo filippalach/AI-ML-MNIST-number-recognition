@@ -7,16 +7,22 @@ import os
 with open('config.json') as json_config:
     data = json.load(json_config)
 
-TRAIN_BATCH_SIZE = data['train_batch_size']
-TEST_BATCH_SIZE = data['test_batch_size']
-EPOCHS = data['epochs']
-LOG_INTERVAL = data['log_interval']
-OPTIMIZER_LR = data['optimizer_lr']
-USE_CUDA = data['use_cuda']
-SAVE_MODEL = data['save_model']
-SAVE_NAME = data['save_name']
-NUM_WORKERS = data['num_workers']
-SET_INFO_PATH = data['set_info_path']
+general = data['general']
+data_set = data['data_set']
+optimizer = data['optimizer']
+
+EPOCHS = general['epochs']
+USE_CUDA = general['use_cuda']
+SAVE_MODEL = general['save_model']
+SAVE_NAME = general['save_name']
+SET_INFO_PATH = general['set_info_path']    
+
+NUM_WORKERS = data_set['num_workers']
+LOG_INTERVAL = data_set['log_interval']
+TEST_BATCH_SIZE = data_set['test_batch_size']
+TRAIN_BATCH_SIZE = data_set['train_batch_size']
+
+OPTIMIZER_LR = optimizer['optimizer_lr']
 
 
 class Network(torch.nn.Module):

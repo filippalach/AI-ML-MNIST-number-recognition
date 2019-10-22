@@ -1,12 +1,21 @@
 {
-    "train_batch_size": 10,
-    "test_batch_size": 10,
-    "epochs": 9,
-    "log_interval": 100,
-    "optimizer_lr": 0.001,
-    "use_cuda": false,
-    "save_model": false,
-    "save_name": "mnist_cnn.pt",
-    "num_workers": 5,
-    "set_info_path": "set.info"
+    "general":
+    {
+        "epochs": 9,
+        "use_cuda": false,
+        "save_model": false,
+        "save_name": "mnist_cnn.pt",
+        "set_info_path": "set.info"
+    },
+    "data_set":
+    {
+        "train_batch_size": 10,
+        "test_batch_size": 10,
+        "num_workers": 5,
+        "log_interval": 100
+    },
+    "optimizer":
+    {
+        "optimizer_lr": 0.001
+    }
 }
