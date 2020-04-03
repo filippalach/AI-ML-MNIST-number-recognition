@@ -1,2 +1,3 @@
 # AI-ML-MNIST-number-recognition
-Repo for academic AI/ML project.
+
+AI/ML python3/pytorch number recognition; learning based on mnist set
